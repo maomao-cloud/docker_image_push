@@ -5,3 +5,4 @@ nginx
 #支持指定架构
 #--platform=linux/arm64 xiaoyaliu/alist
 ghcr.io/open-webui/open-webui:main
+lscr.io/linuxserver/calibre-web:latest
