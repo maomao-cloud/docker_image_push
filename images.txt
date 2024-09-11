@@ -1,2 +1,2 @@
-ghcr.io/open-webui/open-webui:main
-ghcr.io/lobehub/lobe-chat:main
+open-webui/open-webui:main
+langgenius/dify-web:latest
