@@ -1,3 +1,1 @@
-open-webui/open-webui:latest
-langgenius/dify-web:latest
-mintplexlabs/anythingllm:latest
+bitnami/prometheus:3.0.1
