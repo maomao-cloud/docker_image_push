@@ -1,1 +1,2 @@
-bitnami/prometheus:3.0.1
+#bitnami/prometheus:3.0.1
+bitnami/kube-state-metrics:2.14.0
