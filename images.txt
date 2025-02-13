@@ -1,2 +1,3 @@
 #bitnami/prometheus:3.0.1
-bitnami/kube-state-metrics:2.14.0
+#bitnami/kube-state-metrics:2.14.0
+mzz2017/v2raya:v2.2.6.6
