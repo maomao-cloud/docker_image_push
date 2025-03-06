@@ -1,4 +1,6 @@
 #bitnami/prometheus:3.0.1
 #bitnami/kube-state-metrics:2.14.0
 #VPN代理
-mzz2017/v2raya:v2.2.6.6
+#mzz2017/v2raya:v2.2.6.6
+#nginx
+nginx:1.27.4-alpine
