@@ -3,4 +3,6 @@
 #VPN代理
 #mzz2017/v2raya:v2.2.6.6
 #nginx
-nginx:1.27.4-alpine
+#nginx:1.27.4-alpine
+#nginx-webdav
+bfren/nginx-webdav:6.4.3
