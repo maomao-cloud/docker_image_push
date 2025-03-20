@@ -1,8 +1,7 @@
-ARG NGINX_VERSION=1.25.3
-ARG ALPINE_VERSION=3.19
+ARG NGINX_VERSION=1.27.4
 ARG MODULES=
 
-FROM nginx:${NGINX_VERSION}-alpine${ALPINE_VERSION}
+FROM nginx:${NGINX_VERSION}-alpine
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
     apk update && \

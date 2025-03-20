@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 env:
-  NGINX_VERSION: 1.25.3  # 这里修改nginx版本
+  NGINX_VERSION: 1.27.4  # 这里修改nginx版本
   ALPINE_VERSION: 3.19   # 这里修改alpine版本
   MODULES: webdav-http-module
   ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
