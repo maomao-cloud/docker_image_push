@@ -1,0 +1,9 @@
+ARG NGINX_VERSION=1.25.3
+ARG ALPINE_VERSION=3.19
+ARG MODULES=
+
+FROM nginx:${NGINX_VERSION}-alpine${ALPINE_VERSION}
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache nginx-module-dav
