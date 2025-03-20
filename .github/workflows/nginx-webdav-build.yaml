@@ -62,7 +62,7 @@ jobs:
             --build-arg NGINX_VERSION=${NGINX_VERSION} \
             --build-arg ALPINE_VERSION=${ALPINE_VERSION} \
             --build-arg MODULES="${MODULES}" \
-            -f /docker/nginx-webdav \
+            -f docker/nginx-webdav \
             -t ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION} .
             
           
