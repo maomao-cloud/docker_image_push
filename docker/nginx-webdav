@@ -39,8 +39,8 @@ RUN cd nginx-${NGINX_VERSION} && \
         --with-http_gzip_static_module \
         --with-threads \
         --with-file-aio \
-        --with-http_dav_module \             # 核心 WebDAV 模块
-        --add-module=../nginx-dav-ext-module \  # WebDAV 扩展模块
+        --with-http_dav_module \
+        --add-module=../nginx-dav-ext-module \
         --with-cc-opt='-Os -fomit-frame-pointer' \
         --with-ld-opt=-Wl,--as-needed
 
