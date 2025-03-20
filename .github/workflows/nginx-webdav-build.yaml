@@ -66,4 +66,4 @@ jobs:
             -t ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION} .
             
           
-          docker push ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION}
+          # docker push ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION}
