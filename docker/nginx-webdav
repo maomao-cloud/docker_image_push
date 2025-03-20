@@ -10,6 +10,7 @@ RUN apk add --no-cache \
     openssl-dev \
     zlib-dev \
     expat-dev \
+    libxml2-dev \
     curl \
     git
 
