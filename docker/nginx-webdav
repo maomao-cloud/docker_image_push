@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     zlib-dev \
     expat-dev \
     libxml2-dev \
+    libxslt-dev \
     curl \
     git
 
