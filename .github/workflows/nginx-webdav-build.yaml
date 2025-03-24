@@ -53,13 +53,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
+      - name: Build and push image Aliyun
         run: |
           echo "$ALIYUN_REGISTRY_PASSWORD" | docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} ${{ secrets.ALIYUN_REGISTRY }}
           
-        
-          
           new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION}"
+          
+          echo "new_image: $new_image"
           
           # Build the image with the specified Nginx version and modules
           docker build \
@@ -67,8 +67,8 @@ jobs:
             --build-arg ALPINE_VERSION=${ALPINE_VERSION} \
             --build-arg MODULES="${MODULES}" \
             -f docker/nginx-webdav \
-            -t ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/${new_image} .
+            -t ${new_image} .
           
-          echo "docker push $new_image"
+          echo "docker push : $new_image"
           
-          docker push ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/${new_image}
+          docker push ${new_image}
