@@ -19,10 +19,12 @@ ARG NGINX_VERSION=1.27.4
 
 # 下载并解压 Nginx 源码
 RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
-    tar -zxvf nginx-${NGINX_VERSION}.tar.gz
+    tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
+    ls -l nginx-${NGINX_VERSION}
 
 # 克隆 WebDAV 扩展模块仓库
-RUN git clone https://github.com/arut/nginx-dav-ext-module.git
+RUN git clone https://github.com/arut/nginx-dav-ext-module.git && \
+    ls -l nginx-dav-ext-module
 
 # 编译配置
 RUN cd nginx-${NGINX_VERSION} && \
@@ -43,7 +45,7 @@ RUN cd nginx-${NGINX_VERSION} && \
         --with-http_dav_module \
         --add-module=../nginx-dav-ext-module \
         --with-cc-opt='-Os -fomit-frame-pointer' \
-        --with-ld-opt=-Wl,--as-needed
+        --with-ld-opt=-Wl,--as-needed || cat config.log
 
 # 编译并安装
 RUN cd nginx-${NGINX_VERSION} && \
