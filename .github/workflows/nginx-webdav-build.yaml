@@ -6,8 +6,7 @@ on:
     branches: [main]
 
 env:
-  NGINX_VERSION: 1.27.4  # 这里修改nginx版本
-  ALPINE_VERSION: 3.19   # 这里修改alpine版本
+  NGINX_VERSION: 1.27.3  # 这里修改nginx版本
   MODULES: webdav-http-module
   ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
   ALIYUN_NAME_SPACE: "${{ secrets.ALIYUN_NAME_SPACE }}"
@@ -57,14 +56,13 @@ jobs:
         run: |
           echo "$ALIYUN_REGISTRY_PASSWORD" | docker login --username ${{ secrets.ALIYUN_REGISTRY_USER }} --password ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} ${{ secrets.ALIYUN_REGISTRY }}
           
-          new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/nginx-alpine-webdav:${NGINX_VERSION}-alpine${ALPINE_VERSION}"
+          new_image="$ALIYUN_REGISTRY/$ALIYUN_NAME_SPACE/nginx-alpine-webdav:${NGINX_VERSION}-alpine"
           
           echo "new_image: $new_image"
           
           # Build the image with the specified Nginx version and modules
           docker build \
             --build-arg NGINX_VERSION=${NGINX_VERSION} \
-            --build-arg ALPINE_VERSION=${ALPINE_VERSION} \
             --build-arg MODULES="${MODULES}" \
             -f docker/nginx-webdav \
             -t ${new_image} .
