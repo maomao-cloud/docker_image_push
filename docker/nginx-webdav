@@ -61,7 +61,9 @@ RUN apk add --no-cache \
     pcre \
     openssl \
     zlib \
-    expat
+    expat \
+    libxml2 \
+    libxslt
 
 # 从构建阶段复制文件
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx

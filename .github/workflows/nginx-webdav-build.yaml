@@ -6,8 +6,7 @@ on:
     branches: [main]
 
 env:
-  NGINX_VERSION: 1.27.3  # 这里修改nginx版本
-  MODULES: webdav-http-module
+  NGINX_VERSION: 1.27.4  # 这里修改nginx版本
   ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
   ALIYUN_NAME_SPACE: "${{ secrets.ALIYUN_NAME_SPACE }}"
   ALIYUN_REGISTRY_USER: "${{ secrets.ALIYUN_REGISTRY_USER }}"
@@ -63,7 +62,6 @@ jobs:
           # Build the image with the specified Nginx version and modules
           docker build \
             --build-arg NGINX_VERSION=${NGINX_VERSION} \
-            --build-arg MODULES="${MODULES}" \
             -f docker/nginx-webdav \
             -t ${new_image} .
           
