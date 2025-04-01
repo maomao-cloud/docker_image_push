@@ -1,92 +1,95 @@
-# 使用多阶段构建减少镜像体积
-# 第一阶段：编译环境
-FROM alpine:3.20 as builder
+#
+# NOTE: THIS DOCKERFILE IS REGENERATED WITHOUT DEPENDENCY ON update.sh
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
 
-# 安装编译依赖
-RUN apk add --no-cache \
-    build-base \
-    linux-headers \
-    pcre-dev \
-    openssl-dev \
-    zlib-dev \
-    expat-dev \
-    libxml2-dev \
-    libxslt-dev \
-    curl \
-    git
+# Set variables at the top
+ENV ALPINE_VERSION 3.20
+ENV DEBIAN_VERSION bookworm
+ENV NGINX_VERSION 1.26.3
+ENV NJS_VERSION 0.8.9
+ENV NJS_RELEASE 1
+ENV OTEL_VERSION 0.1.1
+ENV PKG_RELEASE 1
+ENV DYNPKG_RELEASE 2
+ENV PACKAGEREPO https://nginx.org/packages/alpine/
+# 添加 nginx-module-webdav 到 PACKAGES 中
+ENV PACKAGES=" \
+        nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
+        nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+        nginx-module-geoip=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+        nginx-module-image-filter=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+        nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION}-r${NJS_RELEASE} \
+        nginx-module-webdav=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+    "
+ENV REVISION ${NGINX_VERSION}-${PKG_RELEASE}
+ENV PKGOSSCHECKSUM 3a4e869eded0c71e92f522e94edffea7fbfb5e78886ea7e484342fa2e028c62099a67d08860c249bf93776da97b924225e0d849dbb4697b298afe5421d7d6fea
+# 添加 module-webdav 到 BUILDTARGET 中
+ENV BUILDTARGET "module-geoip module-image-filter module-njs module-xslt module-webdav"
 
-# 设置 Nginx 版本
-ARG NGINX_VERSION=1.27.4
+FROM nginx:${NGINX_VERSION}-alpine-slim
 
-# 下载并解压 Nginx 源码
-RUN curl -O https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
-    tar -zxvf nginx-${NGINX_VERSION}.tar.gz && \
-    ls -l nginx-${NGINX_VERSION}
-
-# 克隆 WebDAV 扩展模块仓库
-RUN git clone https://github.com/arut/nginx-dav-ext-module.git && \
-    ls -l nginx-dav-ext-module
-
-# 编译配置
-RUN cd nginx-${NGINX_VERSION} && \
-    ./configure \
-        --prefix=/usr/share/nginx \
-        --sbin-path=/usr/sbin/nginx \
-        --modules-path=/usr/lib/nginx/modules \
-        --conf-path=/etc/nginx/nginx.conf \
-        --error-log-path=/var/log/nginx/error.log \
-        --http-log-path=/var/log/nginx/access.log \
-        --pid-path=/run/nginx.pid \
-        --lock-path=/var/lock/nginx.lock \
-        --with-http_ssl_module \
-        --with-http_realip_module \
-        --with-http_gzip_static_module \
-        --with-threads \
-        --with-file-aio \
-        --with-http_dav_module \
-        --add-module=../nginx-dav-ext-module \
-        --with-cc-opt='-Os -fomit-frame-pointer' \
-        --with-ld-opt=-Wl,--as-needed || cat config.log
-
-# 编译并安装
-RUN cd nginx-${NGINX_VERSION} && \
-    make && \
-    make install
-
-# 第二阶段：运行时环境
-FROM alpine:3.20
-
-# 安装运行时依赖
-RUN apk add --no-cache \
-    pcre \
-    openssl \
-    zlib \
-    expat \
-    libxml2 \
-    libxslt
-
-# 从构建阶段复制文件
-COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
-COPY --from=builder /etc/nginx /etc/nginx
-COPY --from=builder /var/log/nginx /var/log/nginx
-
-# 删除默认的HTML文件
-RUN rm -rf /usr/share/nginx/html/*
-
-# 创建必要目录
-RUN mkdir -p /var/cache/nginx && \
-    touch /var/run/nginx.pid && \
-    adduser -D nginx
-
-# 设置权限
-RUN chown -R nginx:nginx \
-    /var/log/nginx \
-    /var/cache/nginx \
-    /var/run/nginx.pid \
-    /etc/nginx
-
-# 暴露端口
-EXPOSE 80 443
-
-# 容器启动命令
-CMD ["nginx", "-g", "daemon off;"]
+RUN set -x \
+    && apkArch="$(cat /etc/apk/arch)" \
+    && nginxPackages="$PACKAGES" \
+# install prerequisites for public key and pkg-oss checks
+    && apk add --no-cache --virtual .checksum-deps \
+        openssl \
+    && case "$apkArch" in \
+        x86_64|aarch64) \
+# arches officially built by upstream
+            apk add -X "$PACKAGEREPO/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)/main" --no-cache $nginxPackages \
+            ;; \
+        *) \
+# we're on an architecture upstream doesn't officially build for
+# let's build binaries from the published packaging sources
+            set -x \
+            && tempDir="$(mktemp -d)" \
+            && chown nobody:nobody $tempDir \
+            && apk add --no-cache --virtual .build-deps \
+                gcc \
+                libc-dev \
+                make \
+                openssl-dev \
+                pcre2-dev \
+                zlib-dev \
+                linux-headers \
+                libxslt-dev \
+                gd-dev \
+                geoip-dev \
+                libedit-dev \
+                bash \
+                alpine-sdk \
+                findutils \
+                curl \
+            && su nobody -s /bin/sh -c " \
+                export HOME=${tempDir} \
+                && cd ${tempDir} \
+                && curl -f -L -O https://github.com/nginx/pkg-oss/archive/${REVISION}.tar.gz \
+                && PKGOSSCHECKSUM=\"$PKGOSSCHECKSUM *${REVISION}.tar.gz\" \
+                && if [ \"\$(openssl sha512 -r ${REVISION}.tar.gz)\" = \"\$PKGOSSCHECKSUM\" ]; then \
+                    echo \"pkg-oss tarball checksum verification succeeded!\"; \
+                else \
+                    echo \"pkg-oss tarball checksum verification failed!\"; \
+                    exit 1; \
+                fi \
+                && tar xzvf ${REVISION}.tar.gz \
+                && cd pkg-oss-${REVISION} \
+                && cd alpine \
+                && make $BUILDTARGET \
+                && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
+                && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
+                " \
+            && cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/ \
+            && apk del --no-network .build-deps \
+            && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
+            ;; \
+    esac \
+# remove checksum deps
+    && apk del --no-network .checksum-deps \
+# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+    && if [ -n "$tempDir" ]; then rm -rf "$tempDir"; fi \
+    && if [ -f "/etc/apk/keys/abuild-key.rsa.pub" ]; then rm -f /etc/apk/keys/abuild-key.rsa.pub; fi \
+# Bring in curl and ca-certificates to make registering on DNS SD easier
+    && apk add --no-cache curl ca-certificates
