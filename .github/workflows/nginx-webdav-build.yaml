@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 env:
-  NGINX_VERSION: 1.27.4  # 这里修改nginx版本
+  NGINX_VERSION: 1.26.3  # 这里修改nginx版本
   ALIYUN_REGISTRY: "${{ secrets.ALIYUN_REGISTRY }}"
   ALIYUN_NAME_SPACE: "${{ secrets.ALIYUN_NAME_SPACE }}"
   ALIYUN_REGISTRY_USER: "${{ secrets.ALIYUN_REGISTRY_USER }}"
