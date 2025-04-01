@@ -67,6 +67,7 @@ RUN set -x \
             # 下载并解压 WebDAV 扩展模块
             && curl -f -L -O $NGINX_DAV_EXT_MODULE_URL \
             && tar xzvf v${NGINX_DAV_EXT_MODULE_VERSION}.tar.gz \
+            && echo "下载并解压WebDAV： ${NGINX_DAV_EXT_MODULE_URL}" \
             && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
