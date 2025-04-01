@@ -14,7 +14,9 @@ ENV OTEL_VERSION 0.1.1
 ENV PKG_RELEASE 1
 ENV DYNPKG_RELEASE 2
 ENV PACKAGEREPO https://nginx.org/packages/alpine/
-# 添加 nginx-module-webdav 到 PACKAGES 中
+# 添加 nginx-module-webdav
+ENV NGINX_DAV_EXT_MODULE_VERSION 3.0.0
+ENV NGINX_DAV_EXT_MODULE_URL https://github.com/arut/nginx-dav-ext-module/archive/refs/tags/v${NGINX_DAV_EXT_MODULE_VERSION}.tar.gz
 ENV PACKAGES=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
@@ -62,6 +64,9 @@ RUN set -x \
                 alpine-sdk \
                 findutils \
                 curl \
+            # 下载并解压 WebDAV 扩展模块
+            && curl -f -L -O $NGINX_DAV_EXT_MODULE_URL \
+            && tar xzvf v${NGINX_DAV_EXT_MODULE_VERSION}.tar.gz \
             && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
@@ -76,6 +81,8 @@ RUN set -x \
                 && tar xzvf ${REVISION}.tar.gz \
                 && cd pkg-oss-${REVISION} \
                 && cd alpine \
+                # 修改 configure 命令以包含 WebDAV 扩展模块
+                && ./configure --add-module=../../nginx-dav-ext-module-${NGINX_DAV_EXT_MODULE_VERSION} \
                 && make $BUILDTARGET \
                 && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
                 && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
