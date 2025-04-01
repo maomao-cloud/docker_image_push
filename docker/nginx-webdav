@@ -14,7 +14,7 @@ ENV OTEL_VERSION 0.1.1
 ENV PKG_RELEASE 1
 ENV DYNPKG_RELEASE 2
 ENV PACKAGEREPO https://nginx.org/packages/alpine/
-# 修改 PACKAGES，移除 nginx-module-webdav
+# 添加 nginx-module-webdav 到 PACKAGES 中
 ENV PACKAGES=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
@@ -24,24 +24,25 @@ ENV PACKAGES=" \
     "
 ENV REVISION ${NGINX_VERSION}-${PKG_RELEASE}
 ENV PKGOSSCHECKSUM 3a4e869eded0c71e92f522e94edffea7fbfb5e78886ea7e484342fa2e028c62099a67d08860c249bf93776da97b924225e0d849dbb4697b298afe5421d7d6fea
-# 修改 BUILDTARGET，移除 module-webdav
+# 添加 module-webdav 到 BUILDTARGET 中
 ENV BUILDTARGET "module-geoip module-image-filter module-njs module-xslt"
 
-# 添加手动编译 nginx-module-webdav 的步骤
+
+
 RUN set -x \
     && apkArch="$(cat /etc/apk/arch)" \
     && nginxPackages="$PACKAGES" \
-    # install prerequisites for public key and pkg-oss checks
+# install prerequisites for public key and pkg-oss checks
     && apk add --no-cache --virtual .checksum-deps \
         openssl \
     && case "$apkArch" in \
         x86_64|aarch64) \
-            # arches officially built by upstream
+# arches officially built by upstream
             apk add -X "$PACKAGEREPO/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)/main" --no-cache $nginxPackages \
             ;; \
         *) \
-            # we're on an architecture upstream doesn't officially build for
-            # let's build binaries from the published packaging sources
+# we're on an architecture upstream doesn't officially build for
+# let's build binaries from the published packaging sources
             set -x \
             && tempDir="$(mktemp -d)" \
             && chown nobody:nobody $tempDir \
@@ -84,29 +85,10 @@ RUN set -x \
             && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
             ;; \
     esac \
-    # remove checksum deps
+# remove checksum deps
     && apk del --no-network .checksum-deps \
-    # if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
     && if [ -n "$tempDir" ]; then rm -rf "$tempDir"; fi \
     && if [ -f "/etc/apk/keys/abuild-key.rsa.pub" ]; then rm -f /etc/apk/keys/abuild-key.rsa.pub; fi \
-    # 手动编译 nginx-module-webdav
-    && apk add --no-cache --virtual .webdav-build-deps \
-        gcc \
-        libc-dev \
-        make \
-        openssl-dev \
-        pcre2-dev \
-        zlib-dev \
-        linux-headers \
-    && wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
-    && tar -xzvf nginx-${NGINX_VERSION}.tar.gz \
-    && cd nginx-${NGINX_VERSION} \
-    && ./configure --with-http_dav_module \
-    && make modules \
-    && mkdir -p /etc/nginx/modules \
-    && cp objs/ngx_http_dav_module.so /etc/nginx/modules/ \
-    && cd .. \
-    && rm -rf nginx-${NGINX_VERSION} nginx-${NGINX_VERSION}.tar.gz \
-    && apk del --no-network .webdav-build-deps \
-    # Bring in curl and ca-certificates to make registering on DNS SD easier
+# Bring in curl and ca-certificates to make registering on DNS SD easier
     && apk add --no-cache curl ca-certificates
