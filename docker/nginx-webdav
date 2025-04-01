@@ -3,10 +3,10 @@
 #
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
-
+FROM nginx:${NGINX_VERSION}-alpine-slim
 # Set variables at the top
-# ENV ALPINE_VERSION 3.20
-# ENV DEBIAN_VERSION bookworm
+ENV ALPINE_VERSION 3.20
+ENV DEBIAN_VERSION bookworm
 ENV NGINX_VERSION 1.26.3
 ENV NJS_VERSION 0.8.9
 ENV NJS_RELEASE 1
@@ -28,7 +28,7 @@ ENV PKGOSSCHECKSUM 3a4e869eded0c71e92f522e94edffea7fbfb5e78886ea7e484342fa2e028c
 # 添加 module-webdav 到 BUILDTARGET 中
 ENV BUILDTARGET "module-geoip module-image-filter module-njs module-xslt module-webdav"
 
-FROM nginx:${NGINX_VERSION}-alpine-slim
+
 
 RUN set -x \
     && apkArch="$(cat /etc/apk/arch)" \
