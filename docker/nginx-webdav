@@ -82,9 +82,8 @@ RUN set -x \
                 && tar xzvf ${REVISION}.tar.gz \
                 && cd pkg-oss-${REVISION} \
                 && cd alpine \
-                # 修改 configure 命令以包含 WebDAV 扩展模块
                 && ./configure --add-module=../../nginx-dav-ext-module-${NGINX_DAV_EXT_MODULE_VERSION} \
-                && make $BUILDTARGET \
+                && make $BUILDTARGET || { echo "Make failed"; exit 1; } \
                 && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
                 && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
                 " \
