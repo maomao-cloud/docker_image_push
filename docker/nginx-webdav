@@ -77,8 +77,6 @@ RUN set -x \
     && cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/ \
     && apk del --no-network .build-deps \
     && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
-            ;; \
-    esac \
 # remove checksum deps
     && apk del --no-network .checksum-deps \
 # if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
