@@ -4,7 +4,7 @@ FROM nginx:1.26.3-alpine
 ARG NGINX_VERSION=1.26.3
 ARG NGX_WEBDAV_VERSION=3.0.0
 #换国内清华源,阿里源很慢
-RUN cat /etc/apk/repositories | sed -e "s/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/" | tee /etc/apk/repositories
+#RUN cat /etc/apk/repositories | sed -e "s/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/" | tee /etc/apk/repositories
 #编译环境
 RUN mkdir -p /tmp && \
     curl -f -L "https://github.com/arut/nginx-dav-ext-module/archive/refs/tags/v${NGX_WEBDAV_VERSION}.tar.gz" -o /tmp/dav-${NGX_WEBDAV_VERSION}.tar.gz && \
