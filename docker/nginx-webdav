@@ -77,16 +77,12 @@ RUN set -x \
         fi \
         && cd \$NGINX_SRC \
         && ./configure --add-module=${tempDir}/nginx-dav-ext-module-${NGINX_DAV_EXT_MODULE_VERSION} \
-        && make modules \
+        && make $BUILDTARGET \
         && mkdir -p ${tempDir}/packages/alpine/${apkArch} \
         && cp objs/*.so ${tempDir}/packages/alpine/${apkArch}/ \
         && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
         && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
     " \
-        && make $BUILDTARGET || { echo \"Make failed\"; exit 1; } \
-        && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
-        && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
-        " \
     && cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/ \
     && apk del --no-network .build-deps \
     && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
