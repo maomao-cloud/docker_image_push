@@ -17,6 +17,8 @@ RUN mkdir -p /tmp && \
     cd /usr/src/nginx-$NGINX_VERSION && \
     CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
     CONFARGS=${CONFARGS/-Os -fomit-frame-pointer -g/-Os} && \
+    # 移除 -fstack-clash-protection 选项
+    CONFARGS=$(echo $CONFARGS | sed 's/ -fstack-clash-protection//g') && \
     echo $CONFARGS && \
     ./configure --with-compat $CONFARGS --with-http_dav_module --add-module=../ngx_dav/ && \
     make && make install && \
