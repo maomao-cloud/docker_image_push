@@ -17,10 +17,9 @@ RUN mkdir -p /tmp && \
     cd /usr/src/nginx-$NGINX_VERSION && \
     CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') && \
     CONFARGS=${CONFARGS/-Os -fomit-frame-pointer -g/-Os} && \
-    # 移除 -fstack-clash-protection 选项
-    CONFARGS=$(echo $CONFARGS | sed 's/ -fstack-clash-protection//g') && \
     echo $CONFARGS && \
-    ./configure --with-compat $CONFARGS --with-http_dav_module --add-module=../ngx_dav/ && \
+    # 使用双引号包裹 CONFARGS 并使用 eval 执行 ./configure 命令
+    eval ./configure --with-compat "$CONFARGS" --with-http_dav_module --add-module=../ngx_dav/ && \
     make && make install && \
     apk del .build-deps && \
     rm -rf /tmp/* && rm -rf /var/cache/apk/* && rm -rf /usr/src/
