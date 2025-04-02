@@ -80,6 +80,8 @@ RUN set -x \
         && cp objs/*.so ${tempDir}/packages/alpine/${apkArch}/ \
         && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
         && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
+        # 输出 ${tempDir}/.abuild 目录下的所有信息
+        && ls -l ${tempDir}/.abuild \
     " \
     # 检查 abuild-key.rsa.pub 文件是否存在
     && if [ -f ${tempDir}/.abuild/abuild-key.rsa.pub ]; then \
