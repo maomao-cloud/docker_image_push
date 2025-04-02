@@ -69,7 +69,19 @@ RUN set -x \
         && tar xzvf ${REVISION}.tar.gz \
         && cd pkg-oss-${REVISION} \
         && cd alpine \
-        && ./configure --add-module=../../nginx-dav-ext-module-${NGINX_DAV_EXT_MODULE_VERSION} \
+        # 获取nginx源码并配置
+        && NGINX_SRC=\$(find / -name "nginx-${NGINX_VERSION}" -type d) \
+        && if [ -z \"\$NGINX_SRC\" ]; then \
+            curl -f -L -O http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+            && tar xzvf nginx-${NGINX_VERSION}.tar.gz \
+            && NGINX_SRC=\"\$(pwd)/nginx-${NGINX_VERSION}\"; \
+        fi \
+        && cd \$NGINX_SRC \
+        && ./configure --add-module=${tempDir}/nginx-dav-ext-module-${NGINX_DAV_EXT_MODULE_VERSION} \
+        && make modules \
+        && mkdir -p ${tempDir}/packages/alpine/${apkArch} \
+        && cp objs/*.so ${tempDir}/packages/alpine/${apkArch}/ \
+        " \
         && make $BUILDTARGET || { echo \"Make failed\"; exit 1; } \
         && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
         && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
