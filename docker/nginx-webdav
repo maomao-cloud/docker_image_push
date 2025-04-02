@@ -81,7 +81,13 @@ RUN set -x \
         && apk index --allow-untrusted -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
         && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
     " \
-    && cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/ \
+    # 检查 abuild-key.rsa.pub 文件是否存在
+    && if [ -f ${tempDir}/.abuild/abuild-key.rsa.pub ]; then \
+        cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/; \
+    else \
+        echo "Error: abuild-key.rsa.pub not found in ${tempDir}/.abuild/"; \
+        exit 1; \
+    fi \
     && apk del --no-network .build-deps \
     && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
 # remove checksum deps
