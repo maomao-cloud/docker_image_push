@@ -8,5 +8,4 @@
 #bfren/nginx-webdav:6.4.3
 
 #JDK
-#openjdk:21
-openjdk:21-jdk-slim
+eclipse-temurin:21-jdk-alpine
