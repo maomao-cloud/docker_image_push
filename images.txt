@@ -1,8 +1,12 @@
 #bitnami/prometheus:3.0.1
 #bitnami/kube-state-metrics:2.14.0
 #VPN代理
-mzz2017/v2raya:v2.2.7.1
+#mzz2017/v2raya:v2.2.7.1
 #nginx
 #nginx:1.27.4-alpine
 #nginx-webdav
 #bfren/nginx-webdav:6.4.3
+
+#JDK
+openjdk:21
+openjdk:21-jdk-slim
