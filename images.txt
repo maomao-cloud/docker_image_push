@@ -2,10 +2,11 @@
 #bitnami/kube-state-metrics:2.14.0
 #VPN代理
 #mzz2017/v2raya:v2.2.7.1
+mzz2017/v2raya:v2.2.7.5
 #nginx
 #nginx:1.27.4-alpine
 #nginx-webdav
 #bfren/nginx-webdav:6.4.3
 
 #JDK
-eclipse-temurin:21-jdk-alpine
+#eclipse-temurin:21-jdk-alpine
